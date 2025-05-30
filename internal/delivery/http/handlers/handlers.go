@@ -17,6 +17,7 @@ func RegisterRoutes(h *Handlers) *gin.Engine {
 	router := gin.Default()
 
 	router.POST("/quotes", h.QuotesPost)
+	router.GET("/quotes", h.QuotesGet)
 
 	return router
 }

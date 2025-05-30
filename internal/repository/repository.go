@@ -7,6 +7,7 @@ import (
 
 type Quotation interface {
 	AddQuote(quote models.QuoteBook) error
+	GetAllQuotes() (*sql.Rows, error)
 }
 
 type Repository struct {

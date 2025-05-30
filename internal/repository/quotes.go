@@ -22,3 +22,13 @@ func (db *QuotesRepository) AddQuote(quote models.QuoteBook) error {
 
 	return nil
 }
+
+func (db *QuotesRepository) GetAllQuotes() (*sql.Rows, error) {
+	rows, err := db.db.Query("SELECT id, author, quote FROM quote")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
+}

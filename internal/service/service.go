@@ -7,6 +7,7 @@ import (
 
 type Quotation interface {
 	AddQuote(quote models.QuoteBook) error
+	GetAllQuotes() ([]models.QuoteBookID, error)
 }
 
 type Service struct {
