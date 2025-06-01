@@ -8,6 +8,7 @@ import (
 type Quotation interface {
 	AddQuote(quote models.QuoteBook) error
 	GetAllQuotes() ([]models.QuoteBookID, error)
+	GetRandomQuote() (models.QuoteBook, error)
 }
 
 type Service struct {

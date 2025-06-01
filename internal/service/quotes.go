@@ -1,6 +1,7 @@
 package service
 
 import (
+	"math/rand/v2"
 	"quotetion_book/internal/models"
 	"quotetion_book/internal/repository"
 )
@@ -36,4 +37,23 @@ func (r *QuoteService) GetAllQuotes() ([]models.QuoteBookID, error) {
 	}
 
 	return quotes, nil
+}
+
+func (r *QuoteService) GetRandomQuote() (models.QuoteBook, error) {
+	rowsCount, err := r.repo.GetRowsCount()
+
+	if err != nil {
+		return models.QuoteBook{}, err
+	}
+
+	offset := rand.IntN(rowsCount)
+
+	var q models.QuoteBook
+	q, err = r.repo.GetQuoteFromID(offset)
+
+	if err != nil {
+		return models.QuoteBook{}, err
+	}
+
+	return q, nil
 }
