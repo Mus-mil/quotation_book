@@ -18,6 +18,7 @@ func RegisterRoutes(h *Handlers) *gin.Engine {
 
 	router.POST("/quotes", h.QuotesPost)
 	router.GET("/quotes", h.QuotesGet)
+	router.GET("/quotes/random", h.RandomQuote)
 
 	return router
 }

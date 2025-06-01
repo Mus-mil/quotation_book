@@ -40,3 +40,18 @@ func (h *Handlers) QuotesGet(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, allQuotes)
 }
+
+func (h *Handlers) RandomQuote(ctx *gin.Context) {
+	randomQuote, err := h.serv.GetRandomQuote()
+
+	if err != nil {
+		log.Println(err)
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"ошибка": "непревиденная ошибка базы данных",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, randomQuote)
+}
