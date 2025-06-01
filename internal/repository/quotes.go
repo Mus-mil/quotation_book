@@ -32,3 +32,26 @@ func (db *QuotesRepository) GetAllQuotes() (*sql.Rows, error) {
 
 	return rows, nil
 }
+
+func (db *QuotesRepository) GetRowsCount() (int, error) {
+	rowsCount := 0
+	err := db.db.QueryRow("SELECT COUNT(*) FROM quote").Scan(&rowsCount)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return rowsCount, nil
+}
+
+func (db *QuotesRepository) GetQuoteFromID(offset int) (models.QuoteBook, error) {
+	var q models.QuoteBook
+
+	err := db.db.QueryRow("SELECT author, quote  FROM quote LIMIT 1 OFFSET $1", offset).Scan(&q.Author, &q.Quote)
+
+	if err != nil {
+		return models.QuoteBook{}, err
+	}
+
+	return q, nil
+}

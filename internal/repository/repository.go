@@ -8,6 +8,8 @@ import (
 type Quotation interface {
 	AddQuote(quote models.QuoteBook) error
 	GetAllQuotes() (*sql.Rows, error)
+	GetQuoteFromID(offset int) (models.QuoteBook, error)
+	GetRowsCount() (int, error)
 }
 
 type Repository struct {
