@@ -27,18 +27,43 @@ func (h *Handlers) QuotesPost(ctx *gin.Context) {
 }
 
 func (h *Handlers) QuotesGet(ctx *gin.Context) {
-	allQuotes, err := h.serv.GetAllQuotes()
+	author := ctx.Query("author")
 
-	if err != nil {
-		log.Println(err)
+	if author != "" {
+		QuotesAuthor, err := h.serv.GetQuotesFromAuthor(author)
 
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"ошибка": "непревиденная ошибка базы данных",
-		})
-		return
+		if QuotesAuthor == nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"ошибка": "автора нет в базе данных",
+			})
+			return
+		}
+
+		if err != nil {
+			log.Println(err)
+
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"ошибка": "непревиденная ошибка базы данных",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, QuotesAuthor)
+	} else {
+		allQuotes, err := h.serv.GetAllQuotes()
+
+		if err != nil {
+			log.Println(err)
+
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"ошибка": "непревиденная ошибка базы данных",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, allQuotes)
 	}
 
-	ctx.JSON(http.StatusOK, allQuotes)
 }
 
 func (h *Handlers) RandomQuote(ctx *gin.Context) {
