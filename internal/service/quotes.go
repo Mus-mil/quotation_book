@@ -20,11 +20,11 @@ func (r *QuoteService) AddQuote(quote models.QuoteBook) error {
 
 func (r *QuoteService) GetAllQuotes() ([]models.QuoteBookID, error) {
 	rows, err := r.repo.GetAllQuotes()
+	defer rows.Close()
 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var quotes []models.QuoteBookID
 
@@ -56,4 +56,25 @@ func (r *QuoteService) GetRandomQuote() (models.QuoteBook, error) {
 	}
 
 	return q, nil
+}
+
+func (r *QuoteService) GetQuotesFromAuthor(author string) ([]models.QuoteBookID, error) {
+	rows, err := r.repo.GetQuotesFromAuthor(author)
+	defer rows.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var quotes []models.QuoteBookID
+
+	for rows.Next() {
+		var q models.QuoteBookID
+		if err := rows.Scan(&q.ID, &q.Author, &q.Quote); err != nil {
+			return nil, err
+		}
+		quotes = append(quotes, q)
+	}
+
+	return quotes, nil
 }

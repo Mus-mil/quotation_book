@@ -9,6 +9,7 @@ type Quotation interface {
 	AddQuote(quote models.QuoteBook) error
 	GetAllQuotes() ([]models.QuoteBookID, error)
 	GetRandomQuote() (models.QuoteBook, error)
+	GetQuotesFromAuthor(author string) ([]models.QuoteBookID, error)
 }
 
 type Service struct {
