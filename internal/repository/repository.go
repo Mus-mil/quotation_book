@@ -10,6 +10,7 @@ type Quotation interface {
 	GetAllQuotes() (*sql.Rows, error)
 	GetQuoteFromID(offset int) (models.QuoteBook, error)
 	GetRowsCount() (int, error)
+	GetQuotesFromAuthor(author string) (*sql.Rows, error)
 }
 
 type Repository struct {

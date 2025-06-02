@@ -55,3 +55,13 @@ func (db *QuotesRepository) GetQuoteFromID(offset int) (models.QuoteBook, error)
 
 	return q, nil
 }
+
+func (db *QuotesRepository) GetQuotesFromAuthor(author string) (*sql.Rows, error) {
+	rows, err := db.db.Query("SELECT id, author, quote FROM quote WHERE author = $1", author)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
+}
