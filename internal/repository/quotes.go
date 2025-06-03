@@ -65,3 +65,13 @@ func (db *QuotesRepository) GetQuotesFromAuthor(author string) (*sql.Rows, error
 
 	return rows, nil
 }
+
+func (db *QuotesRepository) DeleteQuoteFromID(id int) error {
+	_, err := db.db.Exec("DELETE FROM quote WHERE id = $1", id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

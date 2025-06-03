@@ -78,3 +78,13 @@ func (r *QuoteService) GetQuotesFromAuthor(author string) ([]models.QuoteBookID,
 
 	return quotes, nil
 }
+
+func (r *QuoteService) DeleteQuotesFromID(id int) error {
+	err := r.repo.DeleteQuoteFromID(id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

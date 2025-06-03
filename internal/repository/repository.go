@@ -11,6 +11,7 @@ type Quotation interface {
 	GetQuoteFromID(offset int) (models.QuoteBook, error)
 	GetRowsCount() (int, error)
 	GetQuotesFromAuthor(author string) (*sql.Rows, error)
+	DeleteQuoteFromID(id int) error
 }
 
 type Repository struct {

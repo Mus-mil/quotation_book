@@ -5,12 +5,20 @@ import (
 	"log"
 	"net/http"
 	"quotetion_book/internal/models"
+	"strconv"
 )
 
 func (h *Handlers) QuotesPost(ctx *gin.Context) {
 	var quote models.QuoteBook
 
 	if err := ctx.BindJSON(&quote); err != nil {
+		log.Println("ошибка парсинга контекста")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"ошибка": "неправильный формат данных",
+		})
+		return
+	}
+	if quote.Author == "" || quote.Quote == "" {
 		log.Println("ошибка парсинга контекста")
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"ошибка": "неправильный формат данных",
@@ -24,6 +32,8 @@ func (h *Handlers) QuotesPost(ctx *gin.Context) {
 			"ошибка": "непревиденная ошибка базы данных",
 		})
 	}
+
+	ctx.Status(http.StatusCreated)
 }
 
 func (h *Handlers) QuotesGet(ctx *gin.Context) {
@@ -79,4 +89,28 @@ func (h *Handlers) RandomQuote(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, randomQuote)
+}
+
+func (h *Handlers) QuotesDelete(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+
+	if err != nil {
+		log.Println(err)
+
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"ошибка": "введите число",
+		})
+		return
+	}
+
+	err = h.serv.DeleteQuotesFromID(id)
+
+	if err != nil {
+		log.Println(err)
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"ошибка": "id не существует",
+		})
+		return
+	}
 }

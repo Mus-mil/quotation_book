@@ -5,19 +5,20 @@ import (
 	"quotetion_book/internal/repository"
 )
 
-type Quotation interface {
+type QuotationService interface {
 	AddQuote(quote models.QuoteBook) error
 	GetAllQuotes() ([]models.QuoteBookID, error)
 	GetRandomQuote() (models.QuoteBook, error)
 	GetQuotesFromAuthor(author string) ([]models.QuoteBookID, error)
+	DeleteQuotesFromID(id int) error
 }
 
 type Service struct {
-	Quotation
+	QuotationService
 }
 
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
-		Quotation: NewQuoteService(repo.Quotation),
+		QuotationService: NewQuoteService(repo.Quotation),
 	}
 }
