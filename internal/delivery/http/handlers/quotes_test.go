@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestQuotesGet(t *testing.T) {
+func TestQuotesPost(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
@@ -61,6 +62,76 @@ func TestQuotesGet(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodPost, "/quotes", strings.NewReader(tc.postRequest))
 		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, tc.expectedStatus, w.Code)
+		assert.Contains(t, w.Body.String(), tc.expectedBody)
+	}
+}
+
+func TestQuotesGet(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	tests := []struct {
+		query          string
+		mockSetup      func(m *mocks.MockQuotationService)
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			query: "",
+			mockSetup: func(m *mocks.MockQuotationService) {
+				m.EXPECT().GetAllQuotes().Return([]models.QuoteBookID{
+					{ID: 1, Author: "Author", Quote: "Quote"},
+				}, nil)
+			},
+			expectedStatus: http.StatusOK,
+			expectedBody:   "Author",
+		},
+		{
+			query: "?author=Leo",
+			mockSetup: func(m *mocks.MockQuotationService) {
+				m.EXPECT().GetQuotesFromAuthor("Leo").Return([]models.QuoteBookID{
+					{ID: 2, Author: "Leo", Quote: "Quote"},
+				}, nil)
+			},
+			expectedStatus: http.StatusOK,
+			expectedBody:   "Leo",
+		},
+		{
+			query: "?author=Unknown",
+			mockSetup: func(m *mocks.MockQuotationService) {
+				m.EXPECT().GetQuotesFromAuthor("Unknown").Return(nil, nil)
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "автора нет",
+		},
+		{
+			query: "?author=Error",
+			mockSetup: func(m *mocks.MockQuotationService) {
+				m.EXPECT().GetQuotesFromAuthor("Error").Return(nil, errors.New("db fail"))
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "ошибка",
+		},
+	}
+
+	for _, tc := range tests {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		MockQuotationService := mocks.NewMockQuotationService(ctrl)
+		tc.mockSetup(MockQuotationService)
+
+		svc := &service.Service{QuotationService: MockQuotationService}
+		h := handlers.NewHandlers(svc)
+
+		router := gin.Default()
+		router.GET("/quotes", h.QuotesGet)
+
+		req := httptest.NewRequest(http.MethodGet, "/quotes"+tc.query, nil)
 		w := httptest.NewRecorder()
 
 		router.ServeHTTP(w, req)
