@@ -27,6 +27,14 @@ quotation_book/
 ├── Makefile                  # Скрипты для сборки и тестирования
 └── README.md                 # Документация проекта
 ```
+## Добавление кофигураций
+
+файл .env  
+```
+PG_PASSWORD=YOUR_PASSWORD
+```
+Где YOUR_PASSWORD ваш пароль от postgresql  
+А также добавьте конфигурации в файл config/configs.yaml
 
 ## ⚙️ Установка и запуск
 
